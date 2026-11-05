@@ -180,7 +180,7 @@ public final class NativeSettings {
           "amoled",
           "moon",
           "AMOLED theme",
-          "Black backgrounds in dark mode. Restart Slack to apply.",
+          "Finally, a real dark mode. Restart Slack to apply.",
           true);
       row(
           items,
@@ -201,14 +201,14 @@ public final class NativeSettings {
           "pronouns",
           "user",
           "Show pronouns",
-          "Show profile pronouns after message timestamps. Reopen the conversation to refresh.",
+          "Display users' pronouns next to their messages",
           true);
       row(
           items,
           "who_reacted",
           "add_reaction",
           "Who reacted",
-          "Show names beside reactions, or user IDs if unavailable",
+          "Show the avatars of everyone who reacted next to each reaction",
           true);
       section(items, "Privacy");
       row(
@@ -216,14 +216,14 @@ public final class NativeSettings {
           "silent_typing",
           "keyboard",
           "Silent typing",
-          "Hide your typing indicators, not other people's",
+          "Never show the is typing… indicator to anyone else",
           true);
       row(
           items,
           "anonymous_uploads",
           "file_upload",
           "Anonymous file names",
-          "Randomize file names only. Contents, metadata and your identity stay unchanged.",
+          "Replace uploaded file names with a random string.",
           true);
       section(items, "Local history");
       row(
@@ -231,15 +231,14 @@ public final class NativeSettings {
           "message_logger",
           "history",
           "Message logger",
-          "Show locally saved deleted text and edit history inline. Retain observed text for 30"
-              + " days; no unseen messages or images.",
+          "Keep deleted and edited messages visible",
           true);
       row(
           items,
           "last_seen",
           "clock",
           "Last seen",
-          "Track observed message activity, not last-online status",
+          "Show a last seen time for other people, based on what your client can observe.",
           true);
       row(
           items,
@@ -275,15 +274,15 @@ public final class NativeSettings {
           items,
           "feature_flags",
           "flag",
-          "Override feature flags",
-          "Use your feature flag overrides. Can break Slack. Restart to apply.",
+          "Apply feature flags",
+          "Apply your flag overrides. This can break Slack in ways you don't even understand. Restart to apply.",
           true);
       row(
           items,
           "flags",
           "flag",
           "Feature flags",
-          "Turn Slack's features and experiments on or off",
+          "Turn Slack's experiments on or off",
           false);
       section(items, "Diagnostics");
       row(
@@ -291,7 +290,7 @@ public final class NativeSettings {
           "crash",
           "bug",
           "Latest crash report",
-          "View and copy the full saved Java error",
+          "Used for debugging :3",
           false);
       return items;
     }

@@ -55,7 +55,7 @@ public final class FeatureFlagsActivity extends Activity {
             Settings.enabled("feature_flags")
                 ? "Turning on a flag the server doesn't offer can break Slack. Restart Slack after"
                     + " a change."
-                : "Overrides are off. Turn on Override feature flags in Slick settings to use"
+                : "These overrides are currently inactive. Turn on Apply feature flags in Slick settings to activate"
                     + " them.",
             14);
     note.setPadding(dp(16), 0, dp(16), dp(8));
