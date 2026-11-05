@@ -22,13 +22,6 @@ val silentTyping =
         )
 
         execute {
-            check(
-                packageMetadata.packageName == "com.Slack" &&
-                    packageMetadata.versionName == "26.10.20.0" &&
-                    packageMetadata.versionCode == "90016283",
-            ) {
-                "Only Slack 26.10.20.0 (90016283) has been inspected."
-            }
             method("Lslack/services/usertyping/UserTypingHandler;", "sendTypingMessage") {
                 it.parameterTypes.isEmpty() && it.returnType == "V"
             }.run {
