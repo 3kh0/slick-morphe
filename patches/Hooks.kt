@@ -19,17 +19,21 @@ internal fun BytecodePatchContext.method(
     type: String,
     name: String,
     match: (MutableMethod) -> Boolean = { true },
-) = (mutableClassDefByOrNull(type) ?: sibling(type, name)).methods.single { it.name == name && match(it) }
+) = (mutableClassDefByOrNull(type) ?: moved(type, name)).methods.single { it.name == name && match(it) }
 
-private fun BytecodePatchContext.sibling(
+// R8 renumbers generated classes ($3, $$ExternalSyntheticLambda0) and merges unrelated ones under one
+// arbitrary name, which differs between builds of the same Slack version. Fall back to the class that
+// implements [name], preferring one nested in the same outer class.
+private fun BytecodePatchContext.moved(
     type: String,
     name: String,
 ): MutableClass {
-    val outer = type.substringBefore('$') + '$'
     val found = mutableListOf<ClassDef>()
-    classDefForEach { c -> if (c.type.startsWith(outer) && c.methods.any { it.name == name }) found += c }
-    check(found.size == 1) { "Could not find class: $type (${found.size} classes in $outer declare $name: ${found.map { it.type }})" }
-    return mutableClassDefBy(found[0])
+    classDefForEach { c -> if (c.methods.any { it.name == name && it.implementation != null }) found += c }
+    val outer = type.substringBefore('$') + '$'
+    val c = found.filter { it.type.startsWith(outer) }.singleOrNull() ?: found.singleOrNull()
+    checkNotNull(c) { "Could not find class: $type (${found.size} classes implement $name: ${found.take(10).map { it.type }})" }
+    return mutableClassDefBy(c)
 }
 
 internal val MutableMethod.code get() = implementation!!.instructions
