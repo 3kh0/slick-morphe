@@ -10,7 +10,7 @@ import com.android.tools.smali.dexlib2.iface.reference.StringReference
 val silentTyping =
     bytecodePatch(
         name = "Slick Android",
-        description = "Native Slick mods with persistent settings below Preferences on the You screen.",
+        description = "Slack should not be awful to use on Android. Let's fix that!",
     ) {
         dependsOn(nativeFeatures, cacheCleaner, featureFlags)
         compatibleWith(
