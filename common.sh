@@ -5,7 +5,6 @@ tools="$root/work"
 export PATH="$JAVA_HOME/bin:$PATH"
 mkdir -p "$tools"
 
-
 download() {
 	local sum="$2  $tools/$1"
 	sha256sum -c - <<<"$sum" &>/dev/null || curl -fsSL --retry 3 "$3" -o "$tools/$1"
