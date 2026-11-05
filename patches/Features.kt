@@ -177,11 +177,18 @@ val nativeFeatures =
                     )
             }
 
-            method("Lslack/widgets/messages/reactions/ReactionView;", "updateReaction").run {
-                // Only the final successful bind, not early returns that reuse a view.
-                val end = code.indexOfLast { it.opcode == Opcode.RETURN_VOID }
-                check(end >= 0)
-                addInstructions(end, call("p0", "Features;->reactions(Ljava/lang/Object;)V"))
+            val reactionView = "Lslack/widgets/messages/reactions/ReactionView;"
+            method(reactionView, "updateReaction").run {
+                val (i) =
+                    indexed { x ->
+                        val f = x.field
+                        x.opcode == Opcode.IPUT_OBJECT && f?.definingClass == reactionView && f.name == "viewModel"
+                    }.one()
+                check(code[i + 1].opcode == Opcode.RETURN_VOID)
+                addInstructions(i + 1, call("p0", "Reactors;->bind(Ljava/lang/Object;)V"))
+            }
+            method("Lslack/corelib/repository/member/UserRepositoryImpl;", "<init>").run {
+                addInstructions(code.indexOfLast { it.opcode == Opcode.RETURN_VOID }, call("p0", "Reactors;->repository(Ljava/lang/Object;)V"))
             }
 
             // Rewrite upload metadata, never the local path or bytes read from it.

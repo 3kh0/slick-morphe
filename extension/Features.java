@@ -6,9 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import java.security.SecureRandom;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 public final class Features {
@@ -91,30 +89,5 @@ public final class Features {
     String v = name.toString();
     names.put(original, v);
     return v;
-  }
-
-  public static void reactions(Object view) {
-    if (!Settings.enabled("who_reacted")) return;
-    try {
-      LinkedHashSet<String> labels = new LinkedHashSet<>();
-      for (Object r : (Collection<?>) Host.get(Host.get(view, "viewModel"), "reactions")) {
-        String names = Host.string(r, "displayNames");
-        if (!names.isEmpty()) labels.add(names);
-        else for (Object u : (Collection<?>) Host.get(r, "users")) labels.add(u.toString());
-      }
-      if (labels.isEmpty()) return;
-      TextView count = (TextView) Host.get(view, "count");
-      StringBuilder text = new StringBuilder(count.getText()).append(" · ");
-      int n = 0;
-      for (String label : labels) {
-        if (n == 3) break;
-        if (n++ > 0) text.append(", ");
-        text.append(label.substring(0, Math.min(label.length(), 60)));
-      }
-      if (labels.size() > 3) text.append(" +").append(labels.size() - 3);
-      count.setText(text);
-    } catch (ReflectiveOperationException | RuntimeException e) {
-      Log.e("Slick", "Reaction hook failed", e);
-    }
   }
 }
