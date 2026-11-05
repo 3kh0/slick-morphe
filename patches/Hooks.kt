@@ -3,8 +3,10 @@ package slick.android
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.BytecodePatchContext
+import app.morphe.patcher.util.proxy.mutableTypes.MutableClass
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
@@ -17,7 +19,18 @@ internal fun BytecodePatchContext.method(
     type: String,
     name: String,
     match: (MutableMethod) -> Boolean = { true },
-) = mutableClassDefBy(type).methods.single { it.name == name && match(it) }
+) = (mutableClassDefByOrNull(type) ?: sibling(type, name)).methods.single { it.name == name && match(it) }
+
+private fun BytecodePatchContext.sibling(
+    type: String,
+    name: String,
+): MutableClass {
+    val outer = type.substringBefore('$') + '$'
+    val found = mutableListOf<ClassDef>()
+    classDefForEach { c -> if (c.type.startsWith(outer) && c.methods.any { it.name == name }) found += c }
+    check(found.size == 1) { "Could not find class: $type (${found.size} classes in $outer declare $name: ${found.map { it.type }})" }
+    return mutableClassDefBy(found[0])
+}
 
 internal val MutableMethod.code get() = implementation!!.instructions
 internal val MutableMethod.registers get() = implementation!!.registerCount
