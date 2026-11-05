@@ -276,7 +276,7 @@ public final class CacheCleaner {
       aggregate.add(
           new Category(
               id,
-              id.equals("coil_disk") ? "Images and thumbnails" : "Audio and video",
+              id.equals("coil_disk") ? "Images" : "Audio and video",
               measured
                   + " measured owner(s), "
                   + unknown
@@ -287,8 +287,7 @@ public final class CacheCleaner {
     }
     return new Snapshot(
         aggregate,
-        "Partial measurement of captured live caches only. Other app data is excluded."
-            + (unavailable ? " Some owners are unavailable; clearing may be incomplete." : "")
-            + " Video is read-only. Active image entries may remain.");
+        "Best effort measurement of cache."
+            + (unavailable ? " Some owners are unavailable; clearing may be incomplete." : ""));
   }
 }

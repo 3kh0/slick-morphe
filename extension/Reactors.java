@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class Reactors {
-  private static final int SHOWN = 3, PX = 72;
+  private static final int SHOWN = 8, PX = 72;
   private static final Handler main = new Handler(Looper.getMainLooper());
   private static final ThreadPoolExecutor io =
       new ThreadPoolExecutor(
@@ -74,21 +74,22 @@ public final class Reactors {
         if (face != null) ready.add(face);
         else missing = true;
       }
-      render((TextView) Host.get(view, "count"), ready);
+      render((TextView) Host.get(view, "count"), ready, ids.size() - shown.size());
       if (missing) load(shown, new WeakReference<>(view), model);
     } catch (ReflectiveOperationException | RuntimeException e) {
       Log.e("Slick", "Reaction hook failed", e);
     }
   }
 
-  private static void render(TextView count, List<Bitmap> ready) {
+  private static void render(TextView count, List<Bitmap> ready, int more) {
     CharSequence text = count.getText();
     SpannableStringBuilder s = new SpannableStringBuilder(text);
     Faces[] old = s.getSpans(0, s.length(), Faces.class);
     if (old.length > 0) s.delete(s.getSpanStart(old[0]), s.length());
     if (!ready.isEmpty()) {
       s.append('￼');
-      s.setSpan(new Faces(ready), s.length() - 1, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+      s.setSpan(
+          new Faces(ready, more), s.length() - 1, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
     if (old.length > 0 || !ready.isEmpty()) count.setText(s);
   }
@@ -176,12 +177,15 @@ public final class Reactors {
     }
   }
 
+  /** Then "+N" in the count's own paint for reactors beyond the first few, like desktop. */
   private static final class Faces extends ReplacementSpan {
     private final List<Bitmap> faces;
+    private final String more;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
-    Faces(List<Bitmap> faces) {
+    Faces(List<Bitmap> faces, int more) {
       this.faces = faces;
+      this.more = more > 0 ? "+" + more : "";
     }
 
     private static float size(Paint p) {
@@ -189,10 +193,14 @@ public final class Reactors {
       return f.descent - f.ascent;
     }
 
+    private float avatars(float d) {
+      return d * 0.3f + d + (faces.size() - 1) * d * 0.67f;
+    }
+
     @Override
     public int getSize(Paint p, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
       float d = size(p);
-      return Math.round(d * 0.3f + d + (faces.size() - 1) * d * 0.67f);
+      return Math.round(avatars(d) + (more.isEmpty() ? 0 : d * 0.25f + p.measureText(more)));
     }
 
     @Override
@@ -215,6 +223,7 @@ public final class Reactors {
             new android.graphics.RectF(left, cy - d / 2, left + d, cy + d / 2),
             paint);
       }
+      if (!more.isEmpty()) canvas.drawText(more, x + avatars(d) + d * 0.25f, y, p);
     }
   }
 }

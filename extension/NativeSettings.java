@@ -414,17 +414,6 @@ public final class NativeSettings {
           false,
           false,
           !cacheBusy);
-      section(items, "Kept safe");
-      row(
-          items,
-          "cache_protected",
-          "file",
-          "Your data stays untouched",
-          "Messages, drafts, pending uploads, downloaded files, login details and Slick history are"
-              + " not cleaned. This is not total app storage.",
-          false,
-          false,
-          false);
       return items;
     }
 
