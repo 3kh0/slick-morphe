@@ -39,7 +39,8 @@ shell_files=(*.sh)
 status=0
 run() { "$@" || status=1; }
 if $fix; then
-	run java -jar "$tools/google-java-format.jar" --replace "${java_files[@]}"
+	# Twice: reflowing a long string in the first pass leaves indentation for the second.
+	for _ in 1 2; do run java -jar "$tools/google-java-format.jar" --replace "${java_files[@]}"; done
 	run ktlint --format 'patches/*.kt'
 	run shfmt -w "${shell_files[@]}"
 else

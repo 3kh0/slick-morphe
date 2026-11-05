@@ -275,23 +275,12 @@ public final class NativeSettings {
           "feature_flags",
           "flag",
           "Apply feature flags",
-          "Apply your flag overrides. This can break Slack in ways you don't even understand. Restart to apply.",
+          "Apply your flag overrides. This can break Slack in ways you don't even understand."
+              + " Restart to apply.",
           true);
-      row(
-          items,
-          "flags",
-          "flag",
-          "Feature flags",
-          "Turn Slack's experiments on or off",
-          false);
+      row(items, "flags", "flag", "Feature flags", "Turn Slack's experiments on or off", false);
       section(items, "Diagnostics");
-      row(
-          items,
-          "crash",
-          "bug",
-          "Latest crash report",
-          "Used for debugging :3",
-          false);
+      row(items, "crash", "bug", "Latest crash report", "Used for debugging :3", false);
       return items;
     }
 

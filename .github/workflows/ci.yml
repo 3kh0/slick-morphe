@@ -1,23 +1,24 @@
 name: ci
 
-# Lints and builds every push. Pushing a v1.2.3 tag also publishes that release and points
-# patches-bundle.json on main at it, which Morphe Manager polls for updates. Tags with a
-# suffix (v1.2.3-beta.1) become GitHub pre-releases and leave Morphe Manager alone.
+# Lints and builds every push and pull request on each platform the scripts support.
 
 on:
   push:
     branches: ["**"]
-    tags: ["v*"]
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
+  check:
+    name: ${{ matrix.check }} (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        check: [lint, build]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -27,30 +28,10 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: work
-          key: tools-${{ hashFiles('build.sh', 'lint.sh') }}
-      - run: bash lint.sh
-      - run: |
-          [[ "$GITHUB_REF_TYPE" == tag ]] && export VERSION="${GITHUB_REF_NAME#v}"
-          bash build.sh
-      - uses: actions/upload-artifact@v7
+          key: ${{ runner.os }}-${{ matrix.check }}-${{ hashFiles(format('{0}.sh', matrix.check)) }}
+      - run: bash ${{ matrix.check }}.sh
+      - if: matrix.check == 'build' && runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
         with:
           name: slick-android
           path: dist/*.mpp
-
-      - name: Release
-        if: github.ref_type == 'tag'
-        run: |
-          tag="$GITHUB_REF_NAME" v="${GITHUB_REF_NAME#v}"
-          [[ "$v" == *-* ]] && pre=--prerelease || pre=--latest
-          gh release create "$tag" dist/*.mpp --title "Slick Android $v" --generate-notes "$pre"
-          [[ "$v" == *-* ]] && exit 0
-          git fetch -q origin main && git checkout -q main
-          jq -n --arg v "$v" --arg t "$(date -u +%Y-%m-%dT%H:%M:%S)" \
-            --arg d "$(gh release view "$tag" --json body --jq .body)" \
-            --arg u "https://github.com/$GITHUB_REPOSITORY/releases/download/$tag/slick-android-$v.mpp" \
-            '{created_at: $t, description: $d, download_url: $u, signature_download_url: "", version: $v}' \
-            > patches-bundle.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -qm "chore: release $tag" patches-bundle.json
-          git push -q origin main
