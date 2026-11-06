@@ -41,11 +41,11 @@ run() { "$@" || status=1; }
 if $fix; then
 	# Twice: reflowing a long string in the first pass leaves indentation for the second.
 	for _ in 1 2; do run java -jar "$tools/google-java-format.jar" --replace "${java_files[@]}"; done
-	run ktlint --format 'patches/*.kt'
+	run ktlint --format 'patches/*.kt' 'scripts/*.kt'
 	run shfmt -w "${shell_files[@]}"
 else
 	run java -jar "$tools/google-java-format.jar" --dry-run --set-exit-if-changed "${java_files[@]}"
-	run ktlint 'patches/*.kt'
+	run ktlint 'patches/*.kt' 'scripts/*.kt'
 	run shfmt -d "${shell_files[@]}"
 fi
 run shellcheck -x "${shell_files[@]}"

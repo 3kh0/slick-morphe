@@ -38,7 +38,8 @@ jobs:
             --arg u "https://github.com/$GITHUB_REPOSITORY/releases/download/$tag/slick-android-$v.mpp" \
             '{created_at: $t, description: $d, download_url: $u, signature_download_url: "", version: $v}' \
             > patches-bundle.json
+          cp dist/patches-list.json patches-list.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -qm "chore: release $tag" patches-bundle.json
+          git commit -qm "chore: release $tag" patches-bundle.json patches-list.json
           git push -q origin main

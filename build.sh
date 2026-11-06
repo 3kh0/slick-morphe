@@ -58,5 +58,9 @@ jar ufm "$build/patches.jar" "$build/about.mf" -C "$build" classes.dex -C "$buil
 	-C "$fonts" Lexend.ttf -C "$fonts" Lexend-OFL.txt
 mkdir -p "$(dirname "$bundle")"
 cp "$build/patches.jar" "$bundle"
+# patches-list.json describes the bundle for the Morphe index; release.yml commits it to main.
+"$tools/kotlinc/bin/kotlinc" -J-Xmx512m -cp "$tools/morphe.jar" -jvm-target 11 \
+	"$root/scripts/PatchesList.kt" -d "$build/list"
+java -cp "$tools/morphe.jar:$build/list" PatchesListKt "$bundle" "$version" "$root/dist/patches-list.json"
 java -jar "$tools/morphe.jar" list-patches --patches "$bundle" --with-packages --with-versions
 printf '\nBuilt %s\n' "$bundle"
