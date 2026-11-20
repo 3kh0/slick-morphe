@@ -12,7 +12,7 @@ val silentTyping =
         name = "Slick Android",
         description = "Slack should not be awful to use on Android. Let's fix that!",
     ) {
-        dependsOn(nativeFeatures, cacheCleaner, featureFlags)
+        dependsOn(nativeFeatures, cacheCleaner, featureFlags, blankEmoji)
         compatibleWith(
             Compatibility(
                 name = "Slack",
