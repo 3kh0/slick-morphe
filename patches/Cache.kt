@@ -11,7 +11,7 @@ val cacheCleaner =
             for ((type, parameters, hook) in listOf(
                 Triple(
                     "Lcoil/disk/RealDiskCache;",
-                    listOf("J", "Lkotlinx/coroutines/CoroutineDispatcher;", "Lokio/FileSystem;", "Lokio/Path;"),
+                    listOf("J", "Lkotlinx/coroutines/scheduling/DefaultIoScheduler;", "Lokio/JvmSystemFileSystem;", "Lokio/Path;"),
                     "images",
                 ),
                 Triple(

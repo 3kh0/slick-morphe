@@ -174,8 +174,11 @@ val modMenu =
             """,
                 )
             }
-            method("Lslack/features/slackbot/dm/SlackbotDmUiKt\$\$ExternalSyntheticLambda2;", "invoke").run {
-                val title = indexed { (it as? WideLiteralInstruction)?.wideLiteral == 0x7f132a59L }.one().index
+            findMethod("invoke") { method ->
+                method.definingClass.startsWith("Lslack/features/slackbot/dm/SlackbotDmUiKt\$\$ExternalSyntheticLambda") &&
+                    method.implementation?.instructions?.any { (it as? WideLiteralInstruction)?.wideLiteral == 0x7f132b3eL } == true
+            }.run {
+                val title = indexed { (it as? WideLiteralInstruction)?.wideLiteral == 0x7f132b3eL }.one().index
                 check((code[title + 1].ref as MethodReference).name == "stringResource")
                 addInstructions(
                     title + 1,
@@ -190,7 +193,7 @@ val modMenu =
             method("Lslack/home/header/components/UserAvatarWithStatusPresenter;", "present") {
                 it.returnType == "Lslack/home/header/NavHeaderYouModel;"
             }.run {
-                check(registers == 48)
+                check(registers == 55)
                 val (i, x) = indexed(Opcode.RETURN_OBJECT).one()
                 check(x.reg == 16)
                 val end = code[i - 1]
