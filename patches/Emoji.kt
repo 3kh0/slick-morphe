@@ -1,14 +1,13 @@
 package slick.android
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
-import app.morphe.patcher.patch.bytecodePatch
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 
 val blankEmoji =
-    bytecodePatch {
+    slackPatch("Fix blank emoji names", "Prevent profile crashes caused by blank emoji names.") {
         dependsOn(modMenu)
         execute {
             val errors = setOf("Emoji name is blank", "Unable to transform an empty emoji name to a canonical emoji name")
