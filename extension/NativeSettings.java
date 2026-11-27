@@ -2,10 +2,10 @@ package slick.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.util.Log;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.widget.ScrollView;
 import android.widget.TextView;
