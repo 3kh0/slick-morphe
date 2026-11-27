@@ -43,7 +43,7 @@ public final class Appearance {
   }
 
   private static int style(Context context, String name) {
-    return context.getResources().getIdentifier(name, "style", "com.Slack");
+    return Settings.identifier(context, name, "style");
   }
 
   public static Integer overlay(Integer original) {

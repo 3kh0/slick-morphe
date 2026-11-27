@@ -18,10 +18,7 @@ final class NativeDialogs {
     try {
       Class<?> type =
           Class.forName("com.google.android.material.dialog.MaterialAlertDialogBuilder");
-      int theme =
-          context
-              .getResources()
-              .getIdentifier("ThemeOverlay.SlackKit.M3.Dialog.Alert", "style", "com.Slack");
+      int theme = Settings.identifier(context, "ThemeOverlay.SlackKit.M3.Dialog.Alert", "style");
       Object builder = type.getConstructor(Context.class, int.class).newInstance(context, theme);
       Object p = Host.get(builder, "P");
       Object[] fields = {
