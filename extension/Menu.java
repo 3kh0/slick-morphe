@@ -47,16 +47,17 @@ public final class Menu {
             Class.forName("slack.uikit.text.CharSequenceResource")
                 .getConstructor(CharSequence.class)
                 .newInstance("Slick setup");
+        int bolt = Settings.identifier(activity, "bolt", "drawable");
         Object icon =
-            Arrays.stream(
-                    Class.forName("slack.uikit.components.SKImageResource$Icon").getConstructors())
-                .filter(c -> c.getParameterCount() == 3)
-                .findFirst()
-                .orElseThrow()
-                .newInstance(
-                    activity.getResources().getIdentifier("bolt", "drawable", "com.Slack"),
-                    null,
-                    null);
+            bolt == 0
+                ? Host.get(template, "icon")
+                : Arrays.stream(
+                        Class.forName("slack.uikit.components.SKImageResource$Icon")
+                            .getConstructors())
+                    .filter(c -> c.getParameterCount() == 3)
+                    .findFirst()
+                    .orElseThrow()
+                    .newInstance(bolt, null, null);
         Constructor<?> constructor =
             Arrays.stream(template.getClass().getConstructors())
                 .filter(c -> c.getParameterCount() == 8 && c.getParameterTypes()[5] == int.class)
@@ -142,13 +143,16 @@ public final class Menu {
           if (c.getParameterTypes().length == 11) constructor = c;
         if (constructor == null) throw new NoSuchMethodException("Slack settings row constructor");
         Object old = Host.get(row, "icon");
-        int bolt = Settings.context.getResources().getIdentifier("bolt", "drawable", "com.Slack");
+        int bolt = Settings.identifier(Settings.context, "bolt", "drawable");
         Object icon =
-            Arrays.stream(old.getClass().getConstructors())
-                .filter(c -> c.getParameterCount() == 3)
-                .findFirst()
-                .orElseThrow()
-                .newInstance(bolt, Host.get(old, "tintColor"), Host.get(old, "contentDescription"));
+            bolt == 0
+                ? old
+                : Arrays.stream(old.getClass().getConstructors())
+                    .filter(c -> c.getParameterCount() == 3)
+                    .findFirst()
+                    .orElseThrow()
+                    .newInstance(
+                        bolt, Host.get(old, "tintColor"), Host.get(old, "contentDescription"));
         items.add(
             i + 1,
             constructor.newInstance(

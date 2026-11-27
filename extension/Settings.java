@@ -34,4 +34,8 @@ public final class Settings {
   public static boolean silentTyping() {
     return enabled("silent_typing");
   }
+
+  public static int identifier(Context context, String name, String defType) {
+    return context.getResources().getIdentifier(name, defType, context.getPackageName());
+  }
 }

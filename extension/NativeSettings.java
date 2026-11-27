@@ -2,6 +2,7 @@ package slick.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.util.Log;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -68,14 +69,14 @@ public final class NativeSettings {
     try {
       Activity activity = page(composer);
       if (activity == null) return original;
-      return activity
-          .getResources()
-          .getIdentifier(
+      int id =
+          Settings.identifier(
+              activity,
               activity.getIntent().getBooleanExtra("slick_cache", false)
                   ? "slick_cache_title"
                   : "slick_settings_title",
-              "string",
-              "com.Slack");
+              "string");
+      return id == 0 ? original : id;
     } catch (ReflectiveOperationException e) {
       throw new IllegalStateException("Slick Preferences title contract changed", e);
     }
@@ -344,10 +345,6 @@ public final class NativeSettings {
         boolean selected,
         boolean enabled)
         throws ReflectiveOperationException {
-      if (pendingSection != null) {
-        appendSection(items, pendingSection);
-        pendingSection = null;
-      }
       Object template = toggle ? toggleTemplate : actionTemplate;
       Object options = Host.get(template, "options");
       if (toggle || !enabled) {
@@ -369,13 +366,25 @@ public final class NativeSettings {
                 Host.get(options, "combineTitleAndSubtitle"),
                 Host.get(options, "titleOverflow"));
       }
-      Object image =
-          make(
-              "slack.uikit.components.SKImageResource$Icon",
-              3,
-              activity.getResources().getIdentifier(icon, "drawable", "com.Slack"),
-              null,
-              null);
+      int iconId = Settings.identifier(activity, icon, "drawable");
+      Object image = null;
+      if (iconId != 0)
+        image = make("slack.uikit.components.SKImageResource$Icon", 3, iconId, null, null);
+      else {
+        try {
+          image = Host.get(template, "image");
+        } catch (ReflectiveOperationException | RuntimeException e) {
+          Log.w("Slick", "Icon not found: " + icon, e);
+        }
+      }
+      if (image == null) {
+        Log.w("Slick", "Skipping settings row without an icon: " + key);
+        return;
+      }
+      if (pendingSection != null) {
+        appendSection(items, pendingSection);
+        pendingSection = null;
+      }
       items.add(
           make(
               MODELS + "SKListGenericPresentationObject",
